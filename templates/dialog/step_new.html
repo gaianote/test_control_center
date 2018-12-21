@@ -1,0 +1,39 @@
+{% block style %}
+<style>
+.modal-body input {margin-top:15px;margin-bottom:15px;}
+</style>
+{% endblock %}
+
+  <div class="modal fade" id="newModal" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLongTitle">新增操作</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <label for="item_name" class="sr-only">测试项描述</label>
+            <input type="text" id="step_description" class="form-control" placeholder="测试项描述" required>
+            <div id = 'alert_name' class="text-danger" style="padding-left: 14px;margin-bottom: 12px;display: none">
+              <!-- 测试项描述 -->
+            </div>
+            <label for="item_info" class="sr-only">调用方法</label>
+            <input type="text" id="step_method" class="form-control" placeholder="调用方法" required>
+            <div id = 'alert_info' class="text-danger" style="padding-left: 14px;margin-bottom: 12px;display: none">
+              <!-- 调用方法 -->
+            </div>
+            <label for="item_info" class="sr-only">调用值</label>
+            <input type="text" id="step_value" class="form-control" placeholder="调用值" required>
+            <div id = 'alert_info' class="text-danger" style="padding-left: 14px;margin-bottom: 12px;display: none">
+              <!-- 调用值 -->
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button id = "submitResult" type="button" class="btn btn-primary">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}项目列表{% endblock %}
+
+
+{% block content %}
+<h2 style = 'margin-top: 20px'>{{title}}</h2>
+
+<div style = 'margin-top:50px'>
+
+
+<button id = 'submit' class="btn btn-success col-sm-1" type="submit" data-toggle="modal" data-target="#newModal" type="submit">新增</button>
+<button id = 'submit' class="btn btn-danger col-sm-1"  data-toggle="modal" data-target="#deleteModal" type="submit">删除</button>
+<button id = 'edit' class="btn btn-info col-sm-1" type="submit">编辑</button>
+<button id = 'submit' class="btn btn-primary col-sm-1" type="submit">执行</button>
+</div>
+
+<div style = 'margin-top:50px'>
+  <table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">测试项</th>
+      <th scope="col">测试项描述</th>
+      <th scope="col">创建日期</th>
+      <th scope="col">选择</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for item in items %}
+    <tr>
+      <th scope="row">{{loop.index}}</th>
+      <td>{{item[1]}}</td>
+      <td>{{item[2]}}</td>
+      <td>{{item[3]}}</td>
+      <td><input item_id = {{item[0]}} type="checkbox"></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+
+</div>
+
+{% include "dialog/delete.html" with context%}
+{% include "dialog/item_new.html" with context%}
+{% endblock %}
+
+
+{% block javascript %}
+<script type="text/javascript" >
+  var group_id = {{group_id}}
+
+  $(function() {
+
+    //
+    $('#submitResult').bind('click', function() {
+      //验证输入是否正确
+
+      var verify_value = function(){
+        var input_value = true
+        if (!$('#item_name').val()){
+          $('#alert_name').show()
+          input_value = false
+        }
+        if (!$('#item_info').val()){
+          $('#alert_info').show()
+          input_value = false
+        }
+        return input_value
+      }
+
+      if (verify_value() == false){return false}
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/new_item'
+      $.getJSON(url , {
+        group_id: group_id,
+        name: $('#item_name').val(),
+        info: $('#item_info').val(),
+        user: 'user'
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/edit?group_id=' + group_id}
+      });
+    });
+  });
+
+var get_checked_list = function(){
+  var checked_list = []
+  var checkbox_list = document.querySelectorAll('[type = checkbox]')
+  for(i=0;i<checkbox_list.length;i++){
+    if(checkbox_list[i].checked){
+      checked_list.push(parseInt(checkbox_list[i].getAttribute('item_id')))
+    }
+  }
+  return checked_list
+}
+
+
+  $(function() {
+
+    $('#delete').bind('click', function() {
+      item_id_list = JSON.stringify(get_checked_list())
+      console.log(item_id_list)
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/item/delete'
+      $.getJSON(url , {
+        item_id_list: item_id_list,
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/edit?group_id=' + group_id}
+      });
+    });
+  });
+  $(function() {
+
+    $('#edit').bind('click', function() {
+      item_id = JSON.stringify(get_checked_list()[0])
+      window.location = 'http://127.0.0.1/project/step?item_id=' + item_id})
+
+  });
+
+</script>
+</script>
+{% endblock %}

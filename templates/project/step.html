@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}项目列表{% endblock %}
+
+
+{% block content %}
+
+        <h2 style = 'margin-top: 20px' id = 'title' item_id = {{item_id}} ">测试步骤 - {{title}}</h2>
+
+<div style = 'margin-top:50px'>
+<button id = 'newbutton' class="btn btn-success col-sm-1" type="submit" data-toggle="modal" data-target="#newModal">新增</button>
+<button id = 'submit' class="btn btn-danger col-sm-1"  data-toggle="modal" data-target="#deleteModal" type="submit">删除</button>
+<button id = 'submit' class="btn btn-primary col-sm-1" type="submit">执行</button>
+<button id = 'exorder' class="btn btn-info col-sm-1" type="submit">交换顺序</button>
+<button id = 'updatebutton' class="btn btn-dark col-sm-1" data-toggle="modal" data-target="#updateModal" type="submit">更新</button>
+</div>
+
+<div style = 'margin-top:50px'>
+  <table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+<!--       <th scope="col">步骤描述</th> -->
+      <th scope="col">调用方法</th>
+      <th scope="col">传入参数</th>
+      <th scope="col">期待值</th>
+      <th scope="col">是否执行</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for item in items %}
+    <tr is_checked = "false">
+      <th scope="row">{{loop.index}}</th>
+<!--       <td>{{item[1]}}</td> -->
+      <td>{{item[2]}}</td>
+      <td>{{item[3]}}</td>
+      <td></td>
+      <td><input step_id = {{item[0]}} type="checkbox" {{item[4]}}></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+
+</div>
+
+{% include "dialog/delete.html" with context%}
+{% include "dialog/step_new.html" with context%}
+{% include "dialog/step_update.html" with context%}
+{% endblock %}
+
+
+{% block javascript %}
+<script type="text/javascript">
+var PROJECT_FUNCTION_LIST = []
+
+$(document).ready(function(){
+var get_checked_list = function(){
+  var checked_list = []
+  length = $('[is_checked="true"]').length
+  for(i=0;i<length;i++){
+    checked_list.push($('[is_checked="true"]').eq(i).find('input').attr('step_id'))
+  }
+  console.log(checked_list)
+  return checked_list
+}
+//删除按钮
+item_id = $('#title').attr('item_id')
+$('#delete').bind('click', function() {
+  step_id_list = JSON.stringify(get_checked_list())
+
+  // 发送信息给服务器
+  var url = 'http://127.0.0.1/project/api/step/delete'
+  $.getJSON(url , {
+    step_id_list: step_id_list,
+  }, function(data) {
+    console.log(data)
+    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+  });
+});
+// 新增group
+$('#submitResult').bind('click', function() {
+  item_id = $("#title").attr("item_id")
+  // 发送信息给服务器
+  var url = 'http://127.0.0.1/project/api/step/new'
+  $.getJSON(url , {
+    item_id: item_id,
+    description: $('#step_description').val(),
+    method: $('#step_method').val(),
+    value: $('#step_value').val()
+  }, function(data) {
+    console.log(data)
+    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+  });
+});
+//编辑按钮
+$('#edit').bind('click', function() {
+  item_id = JSON.stringify(get_checked_list()[0])
+  window.location = 'http://127.0.0.1/project/step?item_id=' + item_id})
+//交换顺序
+$('#exorder').bind('click', function() {
+      step_id_list = JSON.stringify(get_checked_list())
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/step/exorder'
+      $.getJSON(url , {
+        step_id_list: step_id_list,
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+      });
+    });
+//更新
+$('#submitUpdate').bind('click', function() {
+      item_id = $('#title').attr('item_id')
+      step_id = JSON.stringify(get_checked_list()[0])
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/step/update'
+      $.getJSON(url , {
+        step_id: step_id,
+        description: $('#step_description_update').val(),
+        method: $('#step_method_update').val(),
+        value: $('#step_value_update').val()
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+      });
+    });
+//是否执行
+$('[type="checkbox"]').on('click',function(){
+  var url = 'http://127.0.0.1/project/api/step/state'
+  if($(this).prop('checked')){
+
+            $.getJSON(url , {
+              step_id: $(this).attr('step_id'),
+              is_execute: 'checked',
+            }, function(data) {
+              console.log(data)
+              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+            });
+  }else{
+            $.getJSON(url , {
+              step_id: $(this).attr('step_id'),
+              is_execute: '',
+            }, function(data) {
+              console.log(data)
+              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+            });
+  }
+  })
+//选中状态，颜色加深
+
+$('tbody tr').on('click',function(){
+  if ($(this).attr('is_checked') == 'false' ){
+    $(this).css('background-color','rgba(0, 0, 0, 0.075)')
+    $(this).attr('is_checked','true')
+  }else{
+    $(this).css('background-color','')
+    $(this).attr('is_checked','false')
+  }
+
+
+});
+// 自动补全NEW
+
+$('#newbutton').bind('click', function() {
+      item_id = $('#title').attr('item_id')
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/step/getfuncdata'
+      $.getJSON(url , {
+      }, function(data) {
+        console.log(data)
+        PROJECT_FUNCTION_LIST = data.project_function_list
+        PROJECT_FUNCTION_DICT = data.project_function_dict
+      });
+    });
+
+$( "#step_method" ).autocomplete({
+    source:
+            function(request, response) {
+                var results = $.ui.autocomplete.filter(PROJECT_FUNCTION_LIST, request.term);
+                response(results.slice(0, 10));//只显示自动提示的前十条数据
+            },
+    messages: {
+        noResults: '',
+        results: function() {
+          $('.ui-menu').css('z-index',999999999)
+
+        }
+    },
+});
+
+
+$('#step_value').bind('focus click', function() {
+          var key = $("#step_method").val().trim()
+          console.log(key)
+          var value = PROJECT_FUNCTION_DICT[key]
+          console.log(PROJECT_FUNCTION_DICT,value)
+          $( "#step_value" ).val(value)
+    });
+
+
+
+$('#updatebutton').bind('click', function() {
+      item_id = $('#title').attr('item_id')
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/step/getfuncdata'
+      $.getJSON(url , {
+      }, function(data) {
+        console.log(data)
+        PROJECT_FUNCTION_LIST = data.project_function_list
+        PROJECT_FUNCTION_DICT = data.project_function_dict
+      });
+    });
+
+$( "#step_method_update" ).autocomplete({
+    source:
+            function(request, response) {
+                var results = $.ui.autocomplete.filter(PROJECT_FUNCTION_LIST, request.term);
+                response(results.slice(0, 10));//只显示自动提示的前十条数据
+            },
+    messages: {
+        noResults: '',
+        results: function() {
+          $('.ui-menu').css('z-index',999999999)
+
+        }
+    },
+});
+
+
+$('#step_value_update').bind('focus click', function() {
+          var key = $("#step_method_update").val().trim()
+          console.log(key)
+          var value = PROJECT_FUNCTION_DICT[key]
+          console.log(PROJECT_FUNCTION_DICT,value)
+          $( "#step_value_update" ).val(value)
+    });
+
+$('#title').bind('click', function() {
+      item_id = $('#title').attr('item_id')
+
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/step/getgroupid'
+      $.getJSON(url , {
+        item_id: item_id,
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/item?group_id=' + data.group_id}
+      });
+
+    });
+});
+
+
+
+
+
+</script>
+
+{% endblock %}

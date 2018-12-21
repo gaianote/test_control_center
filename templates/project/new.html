@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}新建项目{% endblock %}
+
+{% block style %}
+<style>
+h2 {margin-bottom: 25px}
+.login-center {height: 100vh;}
+input {margin-top:10px;margin-bottom:10px;}
+#submit {margin-top:35px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row login-center align-items-center justify-content-center ">
+    <form class="form-signin col-sm-6">
+      <h2 class="form-signin-heading">请输入</h2>
+      <label for="projectName" class="sr-only">项目名称</label>
+      <input type="text" id="projectName" class="form-control" placeholder="项目名称" required>
+      <div id = 'alert_name' class="text-danger" style="padding-left: 14px;margin-bottom: 12px;display: none">
+        项目名称不能为空！
+      </div>
+      <label for="projectInfo" class="sr-only">项目介绍</label>
+      <input type="text" id="projectInfo" class="form-control" placeholder="项目介绍" required>
+      <div id = 'alert_info' class="text-danger" style="padding-left: 14px;margin-bottom: 12px;display: none">
+        项目描述不能为空！
+      </div>
+      <a href="#" id = 'submitResult' class="btn btn-primary btn-block" >提交</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block javascript %}
+<script type=text/javascript>
+  $(function() {
+
+
+    //
+    $('#submitResult').bind('click', function() {
+      //验证输入是否正确
+
+      var verify_value = function(){
+        var input_value = true
+        if (!$('#projectName').val()){
+          $('#alert_name').show()
+          input_value = false
+        }
+        if (!$('#projectInfo').val()){
+          $('#alert_info').show()
+          input_value = false
+        }
+        return input_value
+      }
+
+      if (verify_value() == false){return false}
+      // 发送信息给服务器
+      var url = 'http://127.0.0.1/project/api/new'
+      $.getJSON(url , {
+        name: $('#projectName').val(),
+        info: $('#projectInfo').val()
+      }, function(data) {
+        console.log(data)
+        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + data.project_id}
+      });
+    });
+  });
+
+
+
+</script>
+{% endblock %}

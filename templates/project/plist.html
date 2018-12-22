@@ -12,6 +12,8 @@
 <button id = 'exeute' class="btn btn-primary col-sm-1" type="submit">执行</button>
 <button id = 'exorder' class="btn btn-info col-sm-1" type="submit">交换顺序</button>
 <button id = 'change' class="btn btn-dark col-sm-1" data-toggle="modal" data-target="#updateModal" type="submit">更新</button>
+<button id = 'report' class="btn btn-primary col-sm-1">日志</button>
+
 </div>
 
 <div style = 'margin-top:50px'>
@@ -22,18 +24,18 @@
       <th scope="col">项目名称</th>
       <th scope="col">项目描述</th>
       <th scope="col">创建日期</th>
-      <th scope="col">是否执行</th>
+      <th scope="col">状态</th>
     </tr>
   </thead>
   <tbody>
 
   {% for project in projects_list %}
-    <tr>
+    <tr project_id = {{project[0]}}>
       <th scope="row">{{loop.index}}</th>
       <td>{{project[1]}}</td>
       <td>{{project[2]}}</td>
       <td>{{project[3]}}</td>
-      <td><input project_id = {{project[0]}} type="checkbox" {{project[5]}}></td>
+      <td>{{project[5]}}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -85,7 +87,7 @@ var get_checked_list = function(){
   var checked_list = []
   length = $('[is_checked="true"]').length
   for(i=0;i<length;i++){
-    checked_list.push($('[is_checked="true"]').eq(i).find('input').attr('project_id'))
+    checked_list.push($('[is_checked="true"]').eq(i).attr('project_id'))
   }
   console.log(checked_list)
   return checked_list
@@ -194,7 +196,11 @@ $('#exeute').bind('click', function() {
         if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
       });
     });
+$('#report').bind('click', function() {
+  project_id = JSON.stringify(get_checked_list()[0])
+  window.location = 'http://127.0.0.1/report/?project_id=' + project_id})
 });
+
 
 </script>
 

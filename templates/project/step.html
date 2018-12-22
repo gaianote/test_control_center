@@ -192,7 +192,7 @@ $( "#step_method" ).autocomplete({
 });
 
 
-$('#step_value').bind('focus click', function() {
+$('#step_value').bind('focus', function() {
           var key = $("#step_method").val().trim()
           console.log(key)
           var value = PROJECT_FUNCTION_DICT[key]

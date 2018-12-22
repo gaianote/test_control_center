@@ -1,14 +1,17 @@
 from flask import Blueprint,render_template, request,jsonify
+from config import config
 from database import sqlite
-from lib import Generator
+from lib import Generator,run_suite
 import json
 import os
 import subprocess
+import unittest
+
 plist = Blueprint('plist',__name__)
 
 @plist.route("/plist/")
 def page():
-    groups = sqlite.fetchall('SELECT ID,NAME,INFO,CREATE_DATE,SORTORDER,IS_EXECUTE FROM PROJECT WHERE IS_DELETED = 0 ORDER BY SORTORDER')
+    groups = sqlite.fetchall('SELECT ID,NAME,INFO,CREATE_DATE,SORTORDER,STATE FROM PROJECT WHERE IS_DELETED = 0 ORDER BY SORTORDER')
     return render_template('project/plist.html',projects_list = groups)
 
 
@@ -59,12 +62,24 @@ def update():
 
 @plist.route("/api/plist/exeute")
 def exeute():
-    project_path = '/mnt/c/Users/00807/Desktop/resilio/toyou/code/核心测试用例/center_test/'
-    test_dir_path = 'test'
-    entry_file = 'main.py'
 
-    generator = Generator(os.path.join(project_path,test_dir_path))
+    project_path = '/mnt/c/Users/gaianote/Desktop/center_test'
+    test_dir_path = 'test'
+
+    os.chdir(project_path)
     project_id = json.loads(request.args.get('project_id'))
+    report_id = sqlite.execute('INSERT INTO REPORT (PROJECT_ID,STATE) VALUES (?,"EXECUTING")',[project_id])
+    generator = Generator(test_dir_path,project_path)
+
+    reportpath = os.path.join(config.reportpath,'{:0>8d}.html'.format(int(report_id)))
+    generator.genentry(config.libpath,reportpath)
+
+    # if sqlite.fetchone('SELECT STATE FROM PROJECT WHERE ID = ?',[project_id])[0] == 'BUSY':
+    #     return jsonify({'state':'busy'})
+    sqlite.execute('UPDATE PROJECT SET STATE = "BUSY" WHERE ID = ?',[project_id])
+    # 首先执行环境检查
+
+    # 执行所有用例
     groups = sqlite.fetchall('SELECT NAME,ID FROM [GROUP] WHERE PROJECT_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[project_id])
     for group in groups:
         order = sqlite.fetchone('SELECT SORTORDER FROM [GROUP] WHERE ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[group[1]])
@@ -76,5 +91,13 @@ def exeute():
             steps = sqlite.fetchall('SELECT METHOD,VALUE FROM STEP WHERE ITEM_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[item[1]])
             for step in steps:
                 generator.genstep(step[0],step[1])
-    subprocess.Popen(['python3',os.path.join(project_path,entry_file)])
+
+
+    # discover = unittest.defaultTestLoader.discover('test',pattern="test_*.py")
+    # run_suite(discover,os.path.join(config.reportpath,'{:0>8d}.html'.format(report_id)))
+    subprocess.Popen(['python3','__test_center_entry__.py'],cwd = project_path)
+    # 完成
+    sqlite.execute('UPDATE REPORT SET STATE = "SUCSESS" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
+    # sqlite.execute('UPDATE REPORT SET STATE = FAIL ,END_DATE = datetime("now") WHERE PROJECT_ID = ?',[project_id])
+    sqlite.execute('UPDATE PROJECT SET STATE = "COMPLETE" WHERE ID = ?',[project_id])
     return jsonify({'state':'success'})

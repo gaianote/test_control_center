@@ -62,7 +62,7 @@ def state():
 
 @step.route("/api/step/getfuncdata")
 def getfuncdata():
-    file_list = get_file_list('C:\\Users\\00807\\Desktop\\resilio\\toyou\\code\\核心测试用例\\center_test\\zeus','.py')
+    file_list = get_file_list('/mnt/c/Users/gaianote/Desktop/center_test/zeus','.py')
 
     func_list,func_dict = get_funcname(file_list)
     return jsonify({'state':'success','project_function_list':func_list,'project_function_dict':func_dict})

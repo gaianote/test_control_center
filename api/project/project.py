@@ -5,9 +5,65 @@ from lib import Generator,run_suite
 import json
 import os
 import subprocess
-import unittest
+from threading import Thread
+from multiprocessing import Process
+import os
 
 plist = Blueprint('plist',__name__)
+def run_projects(project_id):
+
+    def run_project(project_id,groups):
+        project_path = '/mnt/c/Users/gaianote/Desktop/center_test'
+        test_dir_path = 'test'
+
+        os.chdir(project_path)
+        report_id = sqlite.execute('INSERT INTO REPORT (PROJECT_ID,STATE) VALUES (?,"EXECUTING")',[project_id])
+        generator = Generator(test_dir_path,project_path)
+
+        reportpath = os.path.join(config.reportpath,'{:0>8d}.html'.format(int(report_id)))
+        generator.genentry(config.libpath,reportpath)
+        for group in groups:
+            order = sqlite.fetchone('SELECT SORTORDER FROM [GROUP] WHERE ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[group[1]])
+            generator.gengroup(group[0],order[0])
+            items = sqlite.fetchall('SELECT NAME,ID FROM ITEM WHERE GROUP_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[group[1]])
+            print(items)
+            for item in items:
+                generator.genitem(item[0])
+                steps = sqlite.fetchall('SELECT METHOD,VALUE FROM STEP WHERE ITEM_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[item[1]])
+                for step in steps:
+                    generator.genstep(step[0],step[1])
+
+
+        # discover = unittest.defaultTestLoader.discover('test',pattern="test_*.py")
+        # run_suite(discover,os.path.join(config.reportpath,'{:0>8d}.html'.format(report_id)))
+        process = subprocess.Popen(['python3','__test_center_entry__.py'],cwd = project_path,stdout = subprocess.PIPE,stderr = subprocess.PIPE)
+        process.wait()
+        stderr = process.stderr.read()
+        stdout = process.stdout.read()
+        print('stderr:\n',stderr.decode('utf-8'))
+        print('stdout:\n',stdout.decode('utf-8'))
+        if stderr.decode('utf-8').split('\n')[0].find('E') == -1:
+            sqlite.execute('UPDATE REPORT SET STATE = "SUCSESS" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
+            state = "SUCSESS"
+            print("SUCSESS")
+        else:
+            sqlite.execute('UPDATE REPORT SET STATE = "FAIL" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
+            state = "FAIL"
+            print("FAIL")
+        sqlite.execute('UPDATE PROJECT SET STATE = "COMPLETE" WHERE ID = ?',[project_id])
+        return state,report_id
+    # 首先执行环境检查,如果环境检查失败则不进行下面的测试,如果成功，删掉setUp用例
+    groups = sqlite.fetchall('SELECT NAME,ID FROM [GROUP] WHERE PROJECT_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" AND NAME = "setUp" ORDER BY SORTORDER',[project_id])
+    state,report_id = run_project(project_id,groups)
+
+    if state == 'SUCSESS':
+        sqlite.execute('DELETE FROM REPORT WHERE ID = ?',[report_id])
+        os.remove(os.path.join(config.reportpath,'{:0>8d}.html'.format(int(report_id))))
+    else:
+        return False
+    # 执行所有用例
+    groups = sqlite.fetchall('SELECT NAME,ID FROM [GROUP] WHERE PROJECT_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[project_id])
+    run_project(project_id,groups)
 
 @plist.route("/plist/")
 def page():
@@ -63,41 +119,12 @@ def update():
 @plist.route("/api/plist/exeute")
 def exeute():
 
-    project_path = '/mnt/c/Users/gaianote/Desktop/center_test'
-    test_dir_path = 'test'
-
-    os.chdir(project_path)
     project_id = json.loads(request.args.get('project_id'))
-    report_id = sqlite.execute('INSERT INTO REPORT (PROJECT_ID,STATE) VALUES (?,"EXECUTING")',[project_id])
-    generator = Generator(test_dir_path,project_path)
-
-    reportpath = os.path.join(config.reportpath,'{:0>8d}.html'.format(int(report_id)))
-    generator.genentry(config.libpath,reportpath)
 
     # if sqlite.fetchone('SELECT STATE FROM PROJECT WHERE ID = ?',[project_id])[0] == 'BUSY':
     #     return jsonify({'state':'busy'})
     sqlite.execute('UPDATE PROJECT SET STATE = "BUSY" WHERE ID = ?',[project_id])
-    # 首先执行环境检查
-
-    # 执行所有用例
-    groups = sqlite.fetchall('SELECT NAME,ID FROM [GROUP] WHERE PROJECT_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[project_id])
-    for group in groups:
-        order = sqlite.fetchone('SELECT SORTORDER FROM [GROUP] WHERE ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[group[1]])
-        generator.gengroup(group[0],order[0])
-        items = sqlite.fetchall('SELECT NAME,ID FROM ITEM WHERE GROUP_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[group[1]])
-        print(items)
-        for item in items:
-            generator.genitem(item[0])
-            steps = sqlite.fetchall('SELECT METHOD,VALUE FROM STEP WHERE ITEM_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[item[1]])
-            for step in steps:
-                generator.genstep(step[0],step[1])
-
-
-    # discover = unittest.defaultTestLoader.discover('test',pattern="test_*.py")
-    # run_suite(discover,os.path.join(config.reportpath,'{:0>8d}.html'.format(report_id)))
-    subprocess.Popen(['python3','__test_center_entry__.py'],cwd = project_path)
-    # 完成
-    sqlite.execute('UPDATE REPORT SET STATE = "SUCSESS" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
-    # sqlite.execute('UPDATE REPORT SET STATE = FAIL ,END_DATE = datetime("now") WHERE PROJECT_ID = ?',[project_id])
-    sqlite.execute('UPDATE PROJECT SET STATE = "COMPLETE" WHERE ID = ?',[project_id])
+    p = Process(target=run_projects, args=(project_id,))
+    p.daemon = True
+    p.start()
     return jsonify({'state':'success'})

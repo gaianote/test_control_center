@@ -30,8 +30,9 @@ def new():
     group_id = request.args.get('group_id')
     name = request.args.get('name')
     info = request.args.get('info')
+    loop = request.args.get('loop')
     user = request.args.get('user')
-    sqlite.execute('INSERT INTO [ITEM] (GROUP_ID,NAME,INFO,USER) VALUES (?,?,?,?)',[group_id,name,info,user])
+    sqlite.execute('INSERT INTO [ITEM] (GROUP_ID,NAME,INFO,LOOP,USER) VALUES (?,?,?,?,?)',[group_id,name,info,loop,user])
     return jsonify({'state':'success'})
 
 
@@ -49,9 +50,10 @@ def update():
     item_id = json.loads(request.args.get('item_id'))
     name = request.args.get('name')
     info = request.args.get('info')
+    loop = request.args.get('loop')
     user = request.args.get('user')
 
-    sqlite.execute("UPDATE [item] set NAME = ?,INFO = ?,USER = ? where id = ?",[name,info,user,item_id])
+    sqlite.execute("UPDATE [item] set NAME = ?,INFO = ?,USER = ? ,LOOP = ? where id = ?",[name,info,user,loop,item_id])
     return jsonify({'state':'success'})
 
 @item.route("/api/item/state")

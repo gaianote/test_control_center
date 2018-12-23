@@ -72,19 +72,19 @@ $('#delete').bind('click', function() {
   step_id_list = JSON.stringify(get_checked_list())
 
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/step/delete'
+  var url = '/project/api/step/delete'
   $.getJSON(url , {
     step_id_list: step_id_list,
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+    if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
   });
 });
 // 新增group
 $('#submitResult').bind('click', function() {
   item_id = $("#title").attr("item_id")
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/step/new'
+  var url = '/project/api/step/new'
   $.getJSON(url , {
     item_id: item_id,
     description: $('#step_description').val(),
@@ -92,23 +92,23 @@ $('#submitResult').bind('click', function() {
     value: $('#step_value').val()
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+    if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
   });
 });
 //编辑按钮
 $('#edit').bind('click', function() {
   item_id = JSON.stringify(get_checked_list()[0])
-  window.location = 'http://127.0.0.1/project/step?item_id=' + item_id})
+  window.location = '/project/step?item_id=' + item_id})
 //交换顺序
 $('#exorder').bind('click', function() {
       step_id_list = JSON.stringify(get_checked_list())
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/step/exorder'
+      var url = '/project/api/step/exorder'
       $.getJSON(url , {
         step_id_list: step_id_list,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+        if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
       });
     });
 //更新
@@ -116,7 +116,7 @@ $('#submitUpdate').bind('click', function() {
       item_id = $('#title').attr('item_id')
       step_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/step/update'
+      var url = '/project/api/step/update'
       $.getJSON(url , {
         step_id: step_id,
         description: $('#step_description_update').val(),
@@ -124,12 +124,12 @@ $('#submitUpdate').bind('click', function() {
         value: $('#step_value_update').val()
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+        if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
       });
     });
 //是否执行
 $('[type="checkbox"]').on('click',function(){
-  var url = 'http://127.0.0.1/project/api/step/state'
+  var url = '/project/api/step/state'
   if($(this).prop('checked')){
 
             $.getJSON(url , {
@@ -137,7 +137,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: 'checked',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+              if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
             });
   }else{
             $.getJSON(url , {
@@ -145,7 +145,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: '',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/step?item_id=' + item_id}
+              if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
             });
   }
   })
@@ -167,7 +167,7 @@ $('tbody tr').on('click',function(){
 $('#newbutton').bind('click', function() {
       item_id = $('#title').attr('item_id')
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/step/getfuncdata'
+      var url = '/project/api/step/getfuncdata'
       $.getJSON(url , {
       }, function(data) {
         console.log(data)
@@ -205,7 +205,7 @@ $('#step_value').bind('focus', function() {
 $('#updatebutton').bind('click', function() {
       item_id = $('#title').attr('item_id')
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/step/getfuncdata'
+      var url = '/project/api/step/getfuncdata'
       $.getJSON(url , {
       }, function(data) {
         console.log(data)
@@ -242,12 +242,12 @@ $('#title').bind('click', function() {
       item_id = $('#title').attr('item_id')
 
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/step/getgroupid'
+      var url = '/project/api/step/getgroupid'
       $.getJSON(url , {
         item_id: item_id,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/item?group_id=' + data.group_id}
+        if (data.state == 'success'){window.location = '/project/item?group_id=' + data.group_id}
       });
 
     });

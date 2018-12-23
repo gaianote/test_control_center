@@ -54,13 +54,13 @@ input {margin-top:10px;margin-bottom:10px;}
 
       if (verify_value() == false){return false}
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/new'
+      var url = '/project/api/new'
       $.getJSON(url , {
         name: $('#projectName').val(),
         info: $('#projectInfo').val()
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + data.project_id}
+        if (data.state == 'success'){window.location = '/project/group?project_id=' + data.project_id}
       });
     });
   });

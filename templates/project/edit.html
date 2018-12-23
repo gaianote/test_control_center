@@ -74,7 +74,7 @@
 
       if (verify_value() == false){return false}
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/new_item'
+      var url = '/project/api/new_item'
       $.getJSON(url , {
         group_id: group_id,
         name: $('#item_name').val(),
@@ -82,7 +82,7 @@
         user: 'user'
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/edit?group_id=' + group_id}
+        if (data.state == 'success'){window.location = '/project/edit?group_id=' + group_id}
       });
     });
   });
@@ -105,12 +105,12 @@ var get_checked_list = function(){
       item_id_list = JSON.stringify(get_checked_list())
       console.log(item_id_list)
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/item/delete'
+      var url = '/project/api/item/delete'
       $.getJSON(url , {
         item_id_list: item_id_list,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/edit?group_id=' + group_id}
+        if (data.state == 'success'){window.location = '/project/edit?group_id=' + group_id}
       });
     });
   });
@@ -118,7 +118,7 @@ var get_checked_list = function(){
 
     $('#edit').bind('click', function() {
       item_id = JSON.stringify(get_checked_list()[0])
-      window.location = 'http://127.0.0.1/project/step?item_id=' + item_id})
+      window.location = '/project/step?item_id=' + item_id})
 
   });
 

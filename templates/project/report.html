@@ -58,19 +58,19 @@ $('#delete').bind('click', function() {
   report_id_list = JSON.stringify(get_checked_list())
 
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/api/report/delete'
+  var url = '/api/report/delete'
   $.getJSON(url , {
     report_id_list: report_id_list,
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/report/?project_id='+ project_id}
+    if (data.state == 'success'){window.location = '/report/?project_id='+ project_id}
   });
 });
 // 新增group
 $('#submitResult').bind('click', function() {
   project_id = $("#title").attr("project_id")
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/group/new'
+  var url = '/project/api/group/new'
   $.getJSON(url , {
     project_id: project_id,
     name: $('#item_name').val(),
@@ -78,31 +78,31 @@ $('#submitResult').bind('click', function() {
     user: 'user'
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+    if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
   });
 });
 //编辑按钮
 $('#edit').bind('click', function() {
   report_id = JSON.stringify(get_checked_list()[0])
-  window.location = 'http://127.0.0.1/api/report/detail?report_id='+report_id
+  window.location = '/api/report/detail?report_id='+report_id
 })
 //交换顺序
 $('#exorder').bind('click', function() {
       project_id_list = JSON.stringify(get_checked_list())
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/exorder'
+      var url = '/project/api/plist/exorder'
       $.getJSON(url , {
         project_id_list: project_id_list,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 //更新按钮
 $('#submitUpdate').bind('click', function() {
       project_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/update'
+      var url = '/project/api/plist/update'
       $.getJSON(url , {
         project_id: project_id,
         name: $('#update_name').val(),
@@ -110,12 +110,12 @@ $('#submitUpdate').bind('click', function() {
         user: 'user'
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 //是否执行
 $('[type="checkbox"]').on('click',function(){
-  var url = 'http://127.0.0.1/project/api/plist/state'
+  var url = '/project/api/plist/state'
   if($(this).prop('checked')){
 
             $.getJSON(url , {
@@ -123,7 +123,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: 'checked',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+              if (data.state == 'success'){window.location = '/project/plist'}
             });
   }else{
             $.getJSON(url , {
@@ -131,7 +131,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: '',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+              if (data.state == 'success'){window.location = '/project/plist'}
             });
   }
   })
@@ -150,12 +150,12 @@ $('tbody tr').on('click',function(){
 $('#exeute').bind('click', function() {
       project_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/exeute'
+      var url = '/project/api/plist/exeute'
       $.getJSON(url , {
         project_id: project_id
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 });

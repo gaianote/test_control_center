@@ -6,7 +6,7 @@
 <h2 style = 'margin-top: 20px'>项目列表</h2>
 
 <div style = 'margin-top:50px'>
-<button id = 'submit' class="btn btn-success col-sm-1" type="submit" data-toggle="modal" data-target="#newModal" onclick = "window.location = 'http://127.0.0.1/project/new'">新增</button>
+<button id = 'submit' class="btn btn-success col-sm-1" type="submit" data-toggle="modal" data-target="#newModal" onclick = "window.location = '/project/new'">新增</button>
 <button id = 'submit' class="btn btn-danger col-sm-1"  data-toggle="modal" data-target="#deleteModal" type="submit">删除</button>
 <button id = 'edit' class="btn btn-info col-sm-1" type="submit">编辑</button>
 <button id = 'exeute' class="btn btn-primary col-sm-1" type="submit">执行</button>
@@ -65,19 +65,19 @@
 //       project_id_list = JSON.stringify(get_checked_list())
 //       console.log(project_id_list)
 //       // 发送信息给服务器
-//       var url = 'http://127.0.0.1/project/api/plist/delete'
+//       var url = '/project/api/plist/delete'
 //       $.getJSON(url , {
 //         project_id_list: project_id_list,
 //       }, function(data) {
 //         console.log(data)
-//         if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+//         if (data.state == 'success'){window.location = '/project/plist'}
 //       });
 //     });
 //   });
 // $(function(){
 //     $('#edit').bind('click', function() {
 //       project_id = JSON.stringify(get_checked_list()[0])
-//       if(project_id){window.location = 'http://127.0.0.1/project/group/?project_id='+project_id}
+//       if(project_id){window.location = '/project/group/?project_id='+project_id}
 //     });
 //   });
 // <script type="text/javascript" >
@@ -97,19 +97,19 @@ $('#delete').bind('click', function() {
   project_id_list = JSON.stringify(get_checked_list())
 
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/plist/delete'
+  var url = '/project/api/plist/delete'
   $.getJSON(url , {
     project_id_list: project_id_list,
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+    if (data.state == 'success'){window.location = '/project/plist'}
   });
 });
 // 新增group
 $('#submitResult').bind('click', function() {
   project_id = $("#title").attr("project_id")
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/group/new'
+  var url = '/project/api/group/new'
   $.getJSON(url , {
     project_id: project_id,
     name: $('#item_name').val(),
@@ -117,30 +117,30 @@ $('#submitResult').bind('click', function() {
     user: 'user'
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+    if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
   });
 });
 //编辑按钮
 $('#edit').bind('click', function() {
   project_id = JSON.stringify(get_checked_list()[0])
-  window.location = 'http://127.0.0.1/project/group?project_id=' + project_id})
+  window.location = '/project/group?project_id=' + project_id})
 //交换顺序
 $('#exorder').bind('click', function() {
       project_id_list = JSON.stringify(get_checked_list())
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/exorder'
+      var url = '/project/api/plist/exorder'
       $.getJSON(url , {
         project_id_list: project_id_list,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 //更新按钮
 $('#submitUpdate').bind('click', function() {
       project_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/update'
+      var url = '/project/api/plist/update'
       $.getJSON(url , {
         project_id: project_id,
         name: $('#update_name').val(),
@@ -148,12 +148,12 @@ $('#submitUpdate').bind('click', function() {
         user: 'user'
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 //是否执行
 $('[type="checkbox"]').on('click',function(){
-  var url = 'http://127.0.0.1/project/api/plist/state'
+  var url = '/project/api/plist/state'
   if($(this).prop('checked')){
 
             $.getJSON(url , {
@@ -161,7 +161,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: 'checked',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+              if (data.state == 'success'){window.location = '/project/plist'}
             });
   }else{
             $.getJSON(url , {
@@ -169,7 +169,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: '',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+              if (data.state == 'success'){window.location = '/project/plist'}
             });
   }
   })
@@ -188,17 +188,17 @@ $('tbody tr').on('click',function(){
 $('#exeute').bind('click', function() {
       project_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/plist/exeute'
+      var url = '/project/api/plist/exeute'
       $.getJSON(url , {
         project_id: project_id
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/plist'}
+        if (data.state == 'success'){window.location = '/project/plist'}
       });
     });
 $('#report').bind('click', function() {
   project_id = JSON.stringify(get_checked_list()[0])
-  window.location = 'http://127.0.0.1/report/?project_id=' + project_id})
+  window.location = '/report/?project_id=' + project_id})
 });
 
 

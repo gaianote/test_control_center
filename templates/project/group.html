@@ -4,7 +4,7 @@
 
 
 {% block content %}
-        <h2 style = 'margin-top: 20px' id = 'title' project_id = {{project_id}} onclick = 'window.location = "http://127.0.0.1/project/plist/"'>测试组 - {{title}}</h2>
+        <h2 style = 'margin-top: 20px' id = 'title' project_id = {{project_id}} onclick = 'window.location = "/project/plist/"'>测试组 - {{title}}</h2>
 
 <div style = 'margin-top:50px'>
 <button id = 'submit' class="btn btn-success col-sm-1" type="submit" data-toggle="modal" data-target="#newModal">新增</button>
@@ -45,7 +45,7 @@
 </div>
 
 {% include "dialog/delete.html" with context%}
-{% include "dialog/item_new.html" with context%}
+{% include "dialog/group_new.html" with context%}
 {% include "dialog/update.html" with context%}
 {% endblock %}
 
@@ -69,19 +69,19 @@ $('#delete').bind('click', function() {
   group_id_list = JSON.stringify(get_checked_list())
 
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/group/delete'
+  var url = '/project/api/group/delete'
   $.getJSON(url , {
     group_id_list: group_id_list,
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+    if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
   });
 });
 // 新增group
 $('#submitResult').bind('click', function() {
   project_id = $("#title").attr("project_id")
   // 发送信息给服务器
-  var url = 'http://127.0.0.1/project/api/group/new'
+  var url = '/project/api/group/new'
   $.getJSON(url , {
     project_id: project_id,
     name: $('#item_name').val(),
@@ -89,23 +89,23 @@ $('#submitResult').bind('click', function() {
     user: 'user'
   }, function(data) {
     console.log(data)
-    if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+    if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
   });
 });
 //编辑按钮
 $('#edit').bind('click', function() {
   group_id = JSON.stringify(get_checked_list()[0])
-  window.location = 'http://127.0.0.1/project/item?group_id=' + group_id})
+  window.location = '/project/item?group_id=' + group_id})
 //交换顺序
 $('#exorder').bind('click', function() {
       group_id_list = JSON.stringify(get_checked_list())
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/group/exorder'
+      var url = '/project/api/group/exorder'
       $.getJSON(url , {
         group_id_list: group_id_list,
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+        if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
       });
     });
 //新增按钮
@@ -113,7 +113,7 @@ $('#submitUpdate').bind('click', function() {
       project_id = $('#title').attr('project_id')
       group_id = JSON.stringify(get_checked_list()[0])
       // 发送信息给服务器
-      var url = 'http://127.0.0.1/project/api/group/update'
+      var url = '/project/api/group/update'
       $.getJSON(url , {
         group_id: group_id,
         name: $('#update_name').val(),
@@ -121,12 +121,12 @@ $('#submitUpdate').bind('click', function() {
         user: 'user'
       }, function(data) {
         console.log(data)
-        if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+        if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
       });
     });
 //是否执行
 $('[type="checkbox"]').on('click',function(){
-  var url = 'http://127.0.0.1/project/api/group/state'
+  var url = '/project/api/group/state'
   if($(this).prop('checked')){
 
             $.getJSON(url , {
@@ -134,7 +134,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: 'checked',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+              if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
             });
   }else{
             $.getJSON(url , {
@@ -142,7 +142,7 @@ $('[type="checkbox"]').on('click',function(){
               is_execute: '',
             }, function(data) {
               console.log(data)
-              if (data.state == 'success'){window.location = 'http://127.0.0.1/project/group?project_id=' + project_id}
+              if (data.state == 'success'){window.location = '/project/group?project_id=' + project_id}
             });
   }
   })

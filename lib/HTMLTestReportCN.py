@@ -338,7 +338,7 @@ table       { font-size: 100%; table-layout: fixed;width:100% }
     #
 
     HEADING_TMPL = """<div class='heading'>
-<h1 style="font-family: Microsoft YaHei">%(title)s</h1>
+<h1 style="font-family: Microsoft YaHei" onclick = 'window.location="/project/plist/"'>%(title)s</h1>
 %(parameters)s
 <p class='description'>%(description)s</p>
 </div>

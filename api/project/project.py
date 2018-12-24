@@ -13,7 +13,8 @@ plist = Blueprint('plist',__name__)
 def run_projects(project_id):
 
     def run_project(project_id,groups):
-        project_path = '/mnt/c/Users/gaianote/Desktop/center_test'
+        # project_path = '/root/liyp/center_test'S
+        project_path = '/mnt/c/Users/00807/Desktop/resilio/toyou/code/核心测试用例/center_test'
         test_dir_path = 'test'
         # 生成test测试代码
         os.chdir(project_path)
@@ -26,30 +27,29 @@ def run_projects(project_id):
             order = sqlite.fetchone('SELECT SORTORDER FROM [GROUP] WHERE ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked"',[group[1]])
             generator.gengroup(group[0],order[0])
             items = sqlite.fetchall('SELECT NAME,ID,LOOP FROM ITEM WHERE GROUP_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[group[1]])
-            print(items)
+
             for item in items:
                 generator.genitem(item[0],item[2])
-                steps = sqlite.fetchall('SELECT METHOD,VALUE FROM STEP WHERE ITEM_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[item[1]])
+                steps = sqlite.fetchall('SELECT METHOD,VALUE,ASSERT FROM STEP WHERE ITEM_ID = ? AND IS_DELETED = 0 AND IS_EXECUTE = "checked" ORDER BY SORTORDER',[item[1]])
                 for step in steps:
-                    generator.genstep(step[0],step[1])
+                    generator.genstep(step[0],step[1],step[2])
 
-        # 运行测试程序
-        # discover = unittest.defaultTestLoader.discover('test',pattern="test_*.py")
-        # run_suite(discover,os.path.join(config.reportpath,'{:0>8d}.html'.format(report_id)))
         process = subprocess.Popen(['python3','__test_center_entry__.py'],cwd = project_path,stdout = subprocess.PIPE,stderr = subprocess.PIPE)
         process.wait()
         stderr = process.stderr.read()
         stdout = process.stdout.read()
         print('stderr:\n',stderr.decode('utf-8'))
         print('stdout:\n',stdout.decode('utf-8'))
-        if stderr.decode('utf-8').split('\n')[0].find('E') == -1:
+        # print(stderr.decode('utf-8').split('\n')[0].find('E') == -1)
+        # print(stderr.decode('utf-8').split('\n')[0].find('F') == -1)
+        if (stderr.decode('utf-8').split('\n')[0].find('E') == -1) and (stderr.decode('utf-8').split('\n')[0].find('F') == -1):
             sqlite.execute('UPDATE REPORT SET STATE = "SUCSESS" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
             state = "SUCSESS"
-            print("SUCSESS")
+            # print("SUCSESS")
         else:
             sqlite.execute('UPDATE REPORT SET STATE = "FAIL" ,END_DATE = datetime("now") WHERE ID = ?',[report_id])
             state = "FAIL"
-            print("FAIL")
+            # print("FAIL")
         sqlite.execute('UPDATE PROJECT SET STATE = "COMPLETE" WHERE ID = ?',[project_id])
         return state,report_id
     # 首先执行环境检查,如果环境检查失败则不进行下面的测试,如果成功，删掉setUp用例

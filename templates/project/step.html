@@ -35,7 +35,7 @@
 <!--       <td>{{item[1]}}</td> -->
       <td>{{item[2]}}</td>
       <td>{{item[3]}}</td>
-      <td></td>
+      <td>{{item[5]}}</td>
       <td><input step_id = {{item[0]}} type="checkbox" {{item[4]}}></td>
     </tr>
   {% endfor %}
@@ -80,7 +80,7 @@ $('#delete').bind('click', function() {
     if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
   });
 });
-// 新增group
+// 新增step
 $('#submitResult').bind('click', function() {
   item_id = $("#title").attr("item_id")
   // 发送信息给服务器
@@ -89,7 +89,8 @@ $('#submitResult').bind('click', function() {
     item_id: item_id,
     description: $('#step_description').val(),
     method: $('#step_method').val(),
-    value: $('#step_value').val()
+    value: $('#step_value').val(),
+    assert_exp: $('#step_assert_exp').val()
   }, function(data) {
     console.log(data)
     if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
@@ -121,7 +122,8 @@ $('#submitUpdate').bind('click', function() {
         step_id: step_id,
         description: $('#step_description_update').val(),
         method: $('#step_method_update').val(),
-        value: $('#step_value_update').val()
+        value: $('#step_value_update').val(),
+        assert_exp: $('#step_assert_exp_update').val()
       }, function(data) {
         console.log(data)
         if (data.state == 'success'){window.location = '/project/step?item_id=' + item_id}
@@ -230,7 +232,7 @@ $( "#step_method_update" ).autocomplete({
 });
 
 
-$('#step_value_update').bind('focus click', function() {
+$('#step_value_update').bind('focus', function() {
           var key = $("#step_method_update").val().trim()
           console.log(key)
           var value = PROJECT_FUNCTION_DICT[key]

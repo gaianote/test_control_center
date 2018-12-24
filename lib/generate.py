@@ -39,19 +39,22 @@ run_suite(discover,'{}')
             f.write("from zeus import Zeus\n")
             f.write("class {group_name}(unittest.TestCase,Zeus):\n".format(group_name = group_name))
     def genitem(self,item_name,loop = 1):
-        print(loop)
         with open(self.filepath,'a+',encoding = 'utf-8') as f:
             if item_name  in ['setUp','setUpClass','tearDown','tearDownClass']:
                 f.write("  def {func}(self):\n".format(func = item_name))
             else:
                 f.write("  def test_{:0>2d}_{func}(self):\n".format(self.item_order,func = item_name))
                 self.item_order += 1
-            if loop != 1:
+            if loop and loop != 1:
                 f.write("   for i in range({}):\n".format(loop))
 
-    def genstep(self,step_method,step_value):
+    def genstep(self,step_method,step_value,assert_exp):
+
         with open(self.filepath,'a+',encoding = 'utf-8') as f:
-            f.write("    self.{func}({params})\n".format(func = step_method,params = step_value))
+            if assert_exp:
+                f.write("    self.assertTrue(self.{func}({params}){assert_exp})\n".format(func = step_method,params = step_value,assert_exp =assert_exp))
+            else:
+                f.write("    self.{func}({params})\n".format(func = step_method,params = step_value))
 
 
 if __name__ == '__main__':

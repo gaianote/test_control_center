@@ -10,7 +10,7 @@ step = Blueprint('step',__name__)
 def page():
     item_id = json.loads(request.args.get('item_id'))
     title = sqlite.fetchone('SELECT NAME FROM ITEM WHERE ID = ?',[item_id])[0]
-    items = sqlite.fetchall('SELECT ID,DESCRIPTION,METHOD,VALUE,IS_EXECUTE FROM STEP WHERE item_id = ? AND IS_DELETED = 0 ORDER BY SORTORDER',[item_id])
+    items = sqlite.fetchall('SELECT ID,DESCRIPTION,METHOD,VALUE,IS_EXECUTE,ASSERT FROM STEP WHERE item_id = ? AND IS_DELETED = 0 ORDER BY SORTORDER',[item_id])
 
 
     return render_template('project/step.html',title = title,items = items,item_id = item_id)
@@ -27,8 +27,8 @@ def new():
     description = request.args.get('description')
     method = request.args.get('method')
     value = request.args.get('value')
-    print(item_id)
-    sqlite.execute('INSERT INTO STEP (ITEM_ID,DESCRIPTION,METHOD,VALUE) VALUES (?,?,?,?)',[item_id,description,method,value])
+    assert_exp = request.args.get('assert_exp')
+    sqlite.execute('INSERT INTO STEP (ITEM_ID,DESCRIPTION,METHOD,VALUE,ASSERT) VALUES (?,?,?,?,?)',[item_id,description,method,value,assert_exp])
 
     return jsonify({'state':'success'})
 
@@ -49,8 +49,9 @@ def update():
     description = request.args.get('description')
     method = request.args.get('method')
     value = request.args.get('value')
+    assert_exp = request.args.get('assert_exp')
 
-    sqlite.execute("UPDATE [step] set DESCRIPTION = ?,METHOD = ?,VALUE = ? where id = ?",[description,method,value,step_id])
+    sqlite.execute("UPDATE [step] set DESCRIPTION = ?,METHOD = ?,VALUE = ?,ASSERT = ? where id = ?",[description,method,value,assert_exp,step_id])
     return jsonify({'state':'success'})
 
 @step.route("/api/step/state")
@@ -62,9 +63,12 @@ def state():
 
 @step.route("/api/step/getfuncdata")
 def getfuncdata():
-    file_list = get_file_list('/mnt/c/Users/gaianote/Desktop/center_test/zeus','.py')
-
+    # project_path = '/root/liyp/center_test/zeus'
+    project_path = '/mnt/c/Users/00807/Desktop/resilio/toyou/code/核心测试用例/center_test/zeus'
+    file_list = get_file_list(project_path,'.py')
+    print(file_list)
     func_list,func_dict = get_funcname(file_list)
+    print(func_list,func_dict)
     return jsonify({'state':'success','project_function_list':func_list,'project_function_dict':func_dict})
 
 
